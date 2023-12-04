@@ -1,12 +1,17 @@
 import inquirer from 'inquirer'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import process from 'node:process'
 
-async function makeDirectory () {
+// const folder = process.argv[2] ?? '.'
+const folder = process.env.FOLDER ?? '.'
+
+async function makeDirectory (folder) {
     
-    const projectFolderSrc = path.join('new-app', 'src')
+    const mainFolder = path.join(`${folder}`, 'new-app')
+    const projectFolderSrc = path.join(mainFolder, 'src')
     await fs.mkdir(projectFolderSrc, { recursive: true })
-    await fs.mkdir(path.join('new-app', 'public'), { recursive: true })
+    await fs.mkdir(path.join(mainFolder, 'public'), { recursive: true })
     
     const folders = [ 'routers', 'services', 'controllers', 'middlewares', 'models', 'configs']
     
@@ -30,8 +35,6 @@ async function makeDirectory () {
         return responses
     })
 
-    console.log(responses)
-
     if (responses.pattern === 'DAO') {
         await fs.mkdir(path.join(projectFolderSrc, 'DAO'), { recursive: true })
     } else {
@@ -41,4 +44,4 @@ async function makeDirectory () {
     await fs.writeFile(path.join(projectFolderSrc, 'routers', 'apiRouter.tsx'), '')
 }
 
-makeDirectory().catch(console.error);
+makeDirectory(folder).catch(console.error);
